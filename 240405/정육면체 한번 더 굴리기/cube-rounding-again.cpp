@@ -50,52 +50,75 @@ int main() {
 	int y = 0, x = 0, dir = 2;
 	for (int i = 0; i < m; i++) {
 		if (dir == 1) { // 상
-			int tmp = dice[0];
-			dice[0] = dice[3];
-			dice[5] = 7 - dice[0];
-			dice[4] = tmp;
-			dice[3] = 7 - dice[4];
 			y--;
 			if (y < 0) {
 				y = 1;
 				dir = 3;
+				int tmp = dice[0];
+				dice[0] = dice[4];
+				dice[5] = 7 - dice[0];
+				dice[3] = tmp;
+				dice[4] = 7 - dice[3];
+			}
+			else {
+				int tmp = dice[0];
+				dice[0] = dice[3];
+				dice[5] = 7 - dice[0];
+				dice[4] = tmp;
+				dice[3] = 7 - dice[4];
 			}
 		}
 		else if (dir == 2) { // 우
-			int tmp = dice[0];
-			dice[0] = dice[1];
-			dice[5] = 7 - dice[0];
-			dice[2] = tmp;
-			dice[1] = 7 - dice[2];
 			x++;
 			if (x >= n) {
 				x = n - 2;
 				dir = 4;
 			}
+			else {
+				int tmp = dice[0];
+				dice[0] = dice[1];
+				dice[5] = 7 - dice[0];
+				dice[2] = tmp;
+				dice[1] = 7 - dice[2];
+			}
 		}
 		else if (dir == 3) { // 하
-			int tmp = dice[0];
-			dice[0] = dice[4];
-			dice[5] = 7 - dice[0];
-			dice[3] = tmp;
-			dice[4] = 7 - dice[3];
 			y++;
 			if (y >= n) {
 				y = n - 2;
 				dir = 1;
+				int tmp = dice[0];
+				dice[0] = dice[3];
+				dice[5] = 7 - dice[0];
+				dice[4] = tmp;
+				dice[3] = 7 - dice[4];
 			}
+			else {
+				int tmp = dice[0];
+				dice[0] = dice[4];
+				dice[5] = 7 - dice[0];
+				dice[3] = tmp;
+				dice[4] = 7 - dice[3];
+			}	
 		}
 		else if (dir == 4) { // 좌
-			int tmp = dice[0];
-			dice[0] = dice[2];
-			dice[5] = 7 - dice[0];
-			dice[1] = tmp;
-			dice[2] = 7 - dice[1];
 			x--;
 			if (x < 0) {
 				x = 1;
 				dir = 2;
+				int tmp = dice[0];
+				dice[0] = dice[1];
+				dice[5] = 7 - dice[0];
+				dice[2] = tmp;
+				dice[1] = 7 - dice[2];
 			}
+			else {
+				int tmp = dice[0];
+				dice[0] = dice[2];
+				dice[5] = 7 - dice[0];
+				dice[1] = tmp;
+				dice[2] = 7 - dice[1];
+			}		
 		}
 		score += bfs(y, x, map[y][x]);
 
