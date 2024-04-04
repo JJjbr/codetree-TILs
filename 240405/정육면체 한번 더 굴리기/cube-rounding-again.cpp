@@ -73,6 +73,11 @@ int main() {
 			if (x >= n) {
 				x = n - 2;
 				dir = 4;
+				int tmp = dice[0];
+				dice[0] = dice[2];
+				dice[5] = 7 - dice[0];
+				dice[1] = tmp;
+				dice[2] = 7 - dice[1];
 			}
 			else {
 				int tmp = dice[0];
