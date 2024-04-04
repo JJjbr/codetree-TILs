@@ -60,16 +60,6 @@ int main() {
 				y = 1;
 				dir = 3;
 			}
-			else {
-				if (dice[0] > map[y][x]) {
-					dir++;
-					if (dir > 4) dir = 1;
-				}
-				else if (dice[0] < map[y][x]) {
-					dir--;
-					if (dir < 1) dir = 4;
-				}
-			}
 		}
 		else if (dir == 2) { // 우
 			int tmp = dice[0];
@@ -81,16 +71,6 @@ int main() {
 			if (x >= n) {
 				x = n - 2;
 				dir = 4;
-			}
-			else {
-				if (dice[0] > map[y][x]) {
-					dir++;
-					if (dir > 4) dir = 1;
-				}
-				else if (dice[0] < map[y][x]) {
-					dir--;
-					if (dir < 1) dir = 4;
-				}
 			}
 		}
 		else if (dir == 3) { // 하
@@ -104,16 +84,6 @@ int main() {
 				y = n - 2;
 				dir = 1;
 			}
-			else {
-				if (dice[0] > map[y][x]) {
-					dir++;
-					if (dir > 4) dir = 1;
-				}
-				else if (dice[0] < map[y][x]) {
-					dir--;
-					if (dir < 1) dir = 4;
-				}
-			}
 		}
 		else if (dir == 4) { // 좌
 			int tmp = dice[0];
@@ -126,18 +96,17 @@ int main() {
 				x = 1;
 				dir = 2;
 			}
-			else {
-				if (dice[0] > map[y][x]) {
-					dir++;
-					if (dir > 4) dir = 1;
-				}
-				else if (dice[0] < map[y][x]) {
-					dir--;
-					if (dir < 1) dir = 4;
-				}
-			}
 		}
 		score += bfs(y, x, map[y][x]);
+
+		if (dice[0] > map[y][x]) {
+			dir++;
+			if (dir > 4) dir = 1;
+		}
+		else if (dice[0] < map[y][x]) {
+			dir--;
+			if (dir < 1) dir = 4;
+		}
 	}
 
 	cout << score << "\n";
