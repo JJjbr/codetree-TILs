@@ -1,7 +1,6 @@
 #include <iostream>
 #include <unordered_map>
 #include <string>
-#include <queue>
 
 using namespace std;
 
@@ -58,6 +57,7 @@ int main() {
 				for (int j = 0; j < people_idx; j++) {
 					if (people[j].n == 0) continue;
 					int x = people[j].x - rot;
+					if (x < 0) x = L + x;
 					string name = people[j].name;
 					if (um.count(x) != 0) {
 						if (um[x].count(name) != 0) {
@@ -70,6 +70,7 @@ int main() {
 							else {
 								people[j].n -= um[x][name];
 								dish_cnt -= um[x][name];
+								um[x].erase(name);
 							}
 						}
 					}
@@ -77,7 +78,7 @@ int main() {
 			}
 			pre_t = t;
 
-			//cout << x << " " << rot << "\n";
+			//cout << x << "\n";
 		}
 		else if (opt == 200) {
 			cin >> t >> x >> name >> n;
@@ -93,6 +94,7 @@ int main() {
 				for (int j = 0; j < people_idx; j++) {
 					if (people[j].n == 0) continue;
 					int x = people[j].x - rot;
+					if (x < 0) x = L + x;
 					string name = people[j].name;
 					if (um.count(x) != 0) {
 						if (um[x].count(name) != 0) {
@@ -105,6 +107,7 @@ int main() {
 							else {
 								people[j].n -= um[x][name];
 								dish_cnt -= um[x][name];
+								um[x].erase(name);
 							}
 						}
 					}
@@ -124,6 +127,9 @@ int main() {
 				for (int j = 0; j < people_idx; j++) {
 					if (people[j].n == 0) continue;
 					int x = people[j].x - rot;
+					if (x < 0) x = L + x;
+					//cout << "eat " << x << " " << name << "\n";
+					//cout << um.count(x) << "\n";
 					string name = people[j].name;
 					if (um.count(x) != 0) {
 						if (um[x].count(name) != 0) {
@@ -136,6 +142,7 @@ int main() {
 							else {
 								people[j].n -= um[x][name];
 								dish_cnt -= um[x][name];
+								um[x].erase(name);
 							}
 						}
 					}
@@ -146,26 +153,6 @@ int main() {
 
 			cout << people_cnt << " " << dish_cnt << "\n";
 		}
-
-		// 초밥을 먹는다.
-		//for (int i = 0; i < people_idx; i++) {
-		//	if (people[i].n == 0) continue;
-		//	int x = people[i].x - rot;
-		//	if (um.count(x) != 0) {
-		//		if (um[x].count(name) != 0) {
-		//			if (um[x][name] >= people[i].n) {
-		//				um[x][name] -= people[i].n;
-		//				dish_cnt -= people[i].n;
-		//				people[i].n = 0;
-		//				people_cnt--;
-		//			}
-		//			else {
-		//				people[i].n -= um[x][name];
-		//				dish_cnt -= um[x][name];
-		//			}
-		//		}
-		//	}
-		//}
 	}
 	return 0;
 }
