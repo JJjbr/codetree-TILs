@@ -124,9 +124,6 @@ int main() {
 		ry = new_ry;
 		rx = new_rx;
 		map[ry][rx] = 0;
-		/*if (santa_state[close_santa] >= 0) {
-			info[close_santa].dist = dist_r2s;
-		}*/
 		//cout << ry << " " << rx << "\n";
 
 		for (int i = 1; i <= P; i++) {
@@ -164,18 +161,19 @@ int main() {
 
 					santa_state[p] = 2; // 기절
 					//cout << p << "\n";
-					int si = map[info[p].y][info[p].x];
-					map[info[p].y][info[p].x] = p;
-					while (si != p && si > 0) {
+					int tmp_p = p;
+					int si = map[info[tmp_p].y][info[tmp_p].x];
+					map[info[tmp_p].y][info[tmp_p].x] = tmp_p;
+					while (si != tmp_p && si > 0) {
 						info[si].y -= dir_santa[i][0];
 						info[si].x -= dir_santa[i][1];
 						if (info[si].y <= 0 || info[si].y > N || info[si].x <= 0 || info[si].x > N) {
 							santa_state[si] = -1; // 탈락
 							break;
 						}
-						p = si;
-						si = map[info[p].y][info[p].x];
-						map[info[p].y][info[p].x] = p;
+						tmp_p = si;
+						si = map[info[tmp_p].y][info[tmp_p].x];
+						map[info[tmp_p].y][info[tmp_p].x] = tmp_p;
 					}
 					break;
 				}
@@ -207,13 +205,14 @@ int main() {
 			}
 		}
 
+		//cout << "print map\n";
 		//for (int i = 1; i <= N; i++) {
 		//	for (int j = 1; j <= N; j++) {
 		//		cout << map[i][j] << " ";
 		//	}
 		//	cout << "\n";
 		//}
-		//cout << "\n";
+		//cout << "print scores\n";
 		//for (int i = 1; i <= P; i++) {
 		//	cout << santa_score[i] << " ";
 		//}
