@@ -33,11 +33,13 @@ void updateKnight(int id, int dir) {
 			}
 		}
 
-		if (i == id || knights[i].k <= 0) continue;
+		if (knights[i].k <= 0) continue;
 		knights[i].r = ny;
 		knights[i].c = nx;
 		now = knights[i];
 
+		if (i == id) continue;
+		
 		int cnt = 0;
 		for (int y = now.r; y < now.r + now.h; y++) {
 			for (int x = now.c; x < now.c + now.w; x++) {
