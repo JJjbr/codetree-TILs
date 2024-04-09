@@ -4,20 +4,23 @@
 using namespace std;
 
 struct Info {
-	int r, c, h, w, k, dmg;
+	int r, c, h, w, k, dmg, move;
 };
 
 int L, N, Q;
 int map[42][42];
 int knight_map[42][42];
 Info knight[32];
-queue<int> move_list;
+//queue<int> move_list;
 int dir[4][2] = { {-1, 0}, {0, 1}, {1, 0}, {0, -1} };
 
 void getDamages(int cmd_id, int d) {
-	while (!move_list.empty()) {
-		int id = move_list.front();
-		move_list.pop();
+	for (int id = 1; id <= N; id++) {
+		if (!knight[id].move) continue;
+		knight[id].move = 0;
+		
+		//int id = move_list.front();
+		//move_list.pop();
 
 		int y = knight[id].r;
 		int x = knight[id].c;
@@ -129,7 +132,8 @@ bool pushKnight(int id, int d) {
 			// 기사가 있다.
 			if (knight_map[ny][nx] > 0) {
 				if (pushKnight(knight_map[ny][nx], d)) {
-					move_list.push(knight_map[ny][nx]);
+					knight[knight_map[ny][nx]].move = 1;
+					//move_list.push(knight_map[ny][nx]);
 				}
 				else return false;
 			}
@@ -145,7 +149,8 @@ bool pushKnight(int id, int d) {
 			// 기사가 있다.
 			if (knight_map[ny][nx] > 0) {
 				if (pushKnight(knight_map[ny][nx], d)) {
-					move_list.push(knight_map[ny][nx]);
+					knight[knight_map[ny][nx]].move = 1;
+					//move_list.push(knight_map[ny][nx]);
 				}
 				else return false;
 			}
@@ -161,7 +166,8 @@ bool pushKnight(int id, int d) {
 			// 기사가 있다.
 			if (knight_map[ny][nx] > 0) {
 				if (pushKnight(knight_map[ny][nx], d)) {
-					move_list.push(knight_map[ny][nx]);
+					knight[knight_map[ny][nx]].move = 1;
+					//move_list.push(knight_map[ny][nx]);
 				}
 				else return false;
 			}
@@ -177,7 +183,8 @@ bool pushKnight(int id, int d) {
 			// 기사가 있다.
 			if (knight_map[ny][nx] > 0) {
 				if (pushKnight(knight_map[ny][nx], d)) {
-					move_list.push(knight_map[ny][nx]);
+					knight[knight_map[ny][nx]].move = 1;
+					//move_list.push(knight_map[ny][nx]);
 				}
 				else return false;
 			}
@@ -209,7 +216,8 @@ int main() {
 		cin >> id >> d;
 		if (pushKnight(id, d)) {
 			//cout << q << " ok\n";
-			move_list.push(id);
+			knight[id].move = 1;
+			//move_list.push(id);
 			getDamages(id, d);
 		}
 		//for (int i = 1; i <= L; i++) {
