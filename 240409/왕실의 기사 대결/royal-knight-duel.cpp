@@ -36,13 +36,12 @@ void updateKnight(int id, int dir) {
 		knights[i].c = nx;
 
 		if (i == id || knights[i].k <= 0) continue;
-
-		for (int y = knights[i].r; y < knights[i].r + knights[i].h; y++) {
-			for (int x = knights[i].c; x < knights[i].c + knights[i].w; x++) {
+		
+		for (int y = ny; y < ny + now.h; y++) {
+			for (int x = nx; x < nx + now.w; x++) {
 				if (map[y][x] == 1) knights[i].dmg++;
 			}
 		}
-
 		if (knights[i].k - knights[i].dmg <= 0) {
 			knights[i].k = 0;
 
@@ -64,12 +63,17 @@ bool moveKnight(int id, int dir) {
 	for (int y = ny; y < ny + now.h; y++) {
 		for (int x = nx; x < nx + now.w; x++) {
 			if (map[y][x] == 2) return false;
+		}
+	}
 
+	for (int y = ny; y < ny + now.h; y++) {
+		for (int x = nx; x < nx + now.w; x++) {
 			if (knight_map[y][x] > 0 && knight_map[y][x] != id) {
 				if (!moveKnight(knight_map[y][x], dir)) return false;
 			}
 		}
 	}
+
 	knights[id].move = 1;
 	return true;
 }
@@ -98,7 +102,7 @@ int main() {
 		cin >> id >> dir;
 		if (knights[id].k <= 0) continue;
 		if (!moveKnight(id, dir)) continue;
-		else updateKnight(id, dir);
+		updateKnight(id, dir);
 	}
 
 	int ans = 0;
