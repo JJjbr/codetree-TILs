@@ -72,6 +72,7 @@ void getDamages(int cmd_id, int d) {
 		if (dead) {
 			knight[id].r = 0;
 			knight[id].c = 0;
+			knight[id].k = 0;
 			for (int i = y; i < y + knight[id].h; i++) {
 				for (int j = x; j < x + knight[id].w; j++) {
 					// 맵을 벗어난다.
@@ -136,7 +137,7 @@ void getDamages(int cmd_id, int d) {
 	}
 }
 
-bool pushKnight(int id, int d) {
+bool pushKnight(int id, int d, int self) {
 	int y = knight[id].r;
 	int x = knight[id].c;
 
@@ -146,12 +147,15 @@ bool pushKnight(int id, int d) {
 		int ny = y + dir[d][0];
 		for (int nx = x; nx < x + knight[id].w; nx++) {
 			// 맵을 벗어난다.
-			if (ny <= 0 || ny > L || nx <= 0 || nx > L) return true;
+			if (ny <= 0 || ny > L || nx <= 0 || nx > L) {
+				if (self) return false;
+				else return true;
+			}
 			// 벽이 있다.
 			if (map[ny][nx] == 2) return false;
 			// 기사가 있다.
 			if (knight_map[ny][nx] > 0) {
-				if (pushKnight(knight_map[ny][nx], d)) {
+				if (pushKnight(knight_map[ny][nx], d, 0)) {
 					can_move[knight_map[ny][nx]] = 1;
 					//move_list.push(knight_map[ny][nx]);
 				}
@@ -163,12 +167,15 @@ bool pushKnight(int id, int d) {
 		int nx = x + knight[id].w - 1 + dir[d][1];
 		for (int ny = y; ny < y + knight[id].h; ny++) {
 			// 맵을 벗어난다.
-			if (ny <= 0 || ny > L || nx <= 0 || nx > L) return true;
+			if (ny <= 0 || ny > L || nx <= 0 || nx > L) {
+				if (self) return false;
+				else return true;
+			}
 			// 벽이 있다.
 			if (map[ny][nx] == 2) return false;
 			// 기사가 있다.
 			if (knight_map[ny][nx] > 0) {
-				if (pushKnight(knight_map[ny][nx], d)) {
+				if (pushKnight(knight_map[ny][nx], d, 0)) {
 					can_move[knight_map[ny][nx]] = 1;
 					//move_list.push(knight_map[ny][nx]);
 				}
@@ -180,12 +187,15 @@ bool pushKnight(int id, int d) {
 		int ny = y + knight[id].h - 1 + dir[d][0];
 		for (int nx = x; nx < x + knight[id].w; nx++) {
 			// 맵을 벗어난다.
-			if (ny <= 0 || ny > L || nx <= 0 || nx > L) return true;
+			if (ny <= 0 || ny > L || nx <= 0 || nx > L) {
+				if(self) return false;
+				else return true;
+			}
 			// 벽이 있다.
 			if (map[ny][nx] == 2) return false;
 			// 기사가 있다.
 			if (knight_map[ny][nx] > 0) {
-				if (pushKnight(knight_map[ny][nx], d)) {
+				if (pushKnight(knight_map[ny][nx], d, 0)) {
 					can_move[knight_map[ny][nx]] = 1;
 					//move_list.push(knight_map[ny][nx]);
 				}
@@ -197,12 +207,15 @@ bool pushKnight(int id, int d) {
 		int nx = x + dir[d][1];
 		for (int ny = y; ny < y + knight[id].h; ny++) {
 			// 맵을 벗어난다.
-			if (ny <= 0 || ny > L || nx <= 0 || nx > L) return true;
+			if (ny <= 0 || ny > L || nx <= 0 || nx > L) {
+				if (self) return false;
+				else return true;
+			}
 			// 벽이 있다.
 			if (map[ny][nx] == 2) return false;
 			// 기사가 있다.
 			if (knight_map[ny][nx] > 0) {
-				if (pushKnight(knight_map[ny][nx], d)) {
+				if (pushKnight(knight_map[ny][nx], d, 0)) {
 					can_move[knight_map[ny][nx]] = 1;
 					//move_list.push(knight_map[ny][nx]);
 				}
@@ -234,7 +247,7 @@ int main() {
 	int id, d;
 	for (int q = 1; q <= Q; q++) {
 		cin >> id >> d;
-		if (pushKnight(id, d)) {
+		if (knight[id].k > 0 && pushKnight(id, d, 1)) {
 			//cout << q << " ok\n";
 			can_move[id] = 1;
 			//move_list.push(id);
