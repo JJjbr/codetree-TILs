@@ -1,272 +1,110 @@
 #include <iostream>
-#include <queue>
 
 using namespace std;
 
-struct Info {
-	int r, c, h, w, k;
+struct Knight {
+	int r, c, h, w, k, dmg, move;
 };
 
 int L, N, Q;
 int map[42][42];
 int knight_map[42][42];
-Info knight[32];
-bool can_move[32];
-int score[32];
-//int cnt_knight;
-//queue<int> move_list;
-int dir[4][2] = { {-1, 0}, {0, 1}, {1, 0}, {0, -1} };
+Knight knights[32];
+int dy[4] = { -1, 0, 1, 0 };
+int dx[4] = { 0, 1, -1, 0 };
 
-void getDamages(int cmd_id, int d) {
-	for (int id = 1; id <= N; id++) {
-		if (!can_move[id]) continue;
-		can_move[id] = 0;
-		
-		//int id = move_list.front();
-		//move_list.pop();
+void updateKnight(int id, int dir) {
+	for (int i = 1; i <= N; i++) {
+		Knight now = knights[i];
+		if (!now.move) continue;
+		knights[i].move = 0;
 
-		int y = knight[id].r;
-		int x = knight[id].c;
-		
-		//cout << id << " " << y << " " << x << "\n";
+		int ny = now.r + dy[dir];
+		int nx = now.c + dx[dir];
 
-		int nr = y + dir[d][0];
-		int nc = x + dir[d][1];
+		for (int y = now.r; y < now.r + now.h; y++) {
+			for (int x = now.c; x < now.c + now.w; x++) {
+				knight_map[y][x] = 0;
+			}
+		}
+		for (int y = ny; y < ny + now.h; y++) {
+			for (int x = nx; x < nx + now.w; x++) {
+				knight_map[y][x] = i;
+			}
+		}
+		knights[i].r = ny;
+		knights[i].c = nx;
 
-		bool dead = 0;
-		if (cmd_id != id) {
-			for (int i = nr; i < nr + knight[id].h; i++) {
-				for (int j = nc; j < nc + knight[id].w; j++) {
-					// 맵을 벗어난다.
-					if (i <= 0 || i > L || j <= 0 || j > L) {
-						dead = 1;
-						break;
-					}
-					if (map[i][j] == 1) {
-						knight[id].k--;
-						//knight[id].dmg++;
-						score[id]++;
-					}
-					if (knight[id].k <= 0) {
-						dead = 1;
-						break;
-					}
+		if (i == id || knights[i].k <= 0) continue;
+
+		for (int y = knights[i].r; y < knights[i].r + knights[i].h; y++) {
+			for (int x = knights[i].c; x < knights[i].c + knights[i].w; x++) {
+				if (map[y][x] == 1) knights[i].dmg++;
+			}
+		}
+
+		if (knights[i].k - knights[i].dmg <= 0) {
+			knights[i].k = 0;
+
+			for (int y = ny; y < ny + now.h; y++) {
+				for (int x = nx; x < nx + now.w; x++) {
+					knight_map[y][x] = 0;
 				}
-				if (dead) break;
-			}
-		}
-		else {
-			for (int i = nr; i < nr + knight[id].h; i++) {
-				for (int j = nc; j < nc + knight[id].w; j++) {
-					// 맵을 벗어난다.
-					if (i <= 0 || i > L || j <= 0 || j > L) {
-						dead = 1;
-						break;
-					}
-				}
-				if (dead) break;
-			}
-		}
-		//cout << knight[id].k << "\n";
-
-		if (dead) {
-			knight[id].r = 0;
-			knight[id].c = 0;
-			knight[id].k = 0;
-			for (int i = y; i < y + knight[id].h; i++) {
-				for (int j = x; j < x + knight[id].w; j++) {
-					// 맵을 벗어난다.
-					if (i <= 0 || i > L || j <= 0 || j > L) break;
-					knight_map[i][j] = 0;
-				}
-			}
-			//cnt_knight++;
-		}
-		else if (d == 0) {
-			int ny = y + dir[d][0];
-			int py = y + knight[id].h - 1;
-			knight[id].r += dir[d][0];
-			for (int nx = x; nx < x + knight[id].w; nx++) {
-				// 맵을 벗어난다.
-				if (ny <= 0 || ny > L || nx <= 0 || nx > L) break;
-				// 벽이 있다.
-				if (map[ny][nx] == 2) continue;
-				knight_map[ny][nx] = id;
-				knight_map[py][nx] = 0;
-			}
-		}
-		else if (d == 1) {
-			int nx = x + knight[id].w - 1 + dir[d][1];
-			int px = x;
-			knight[id].c += dir[d][1];
-			for (int ny = y; ny < y + knight[id].h; ny++) {
-				// 맵을 벗어난다.
-				if (ny <= 0 || ny > L || nx <= 0 || nx > L) break;
-				// 벽이 있다.
-				if (map[ny][nx] == 2) continue;
-				knight_map[ny][nx] = id;
-				knight_map[ny][px] = 0;
-			}
-		}
-		else if (d == 2) {
-			int ny = y + knight[id].h - 1 + dir[d][0];
-			int py = y;
-			knight[id].r += dir[d][0];
-			for (int nx = x; nx < x + knight[id].w; nx++) {
-				// 맵을 벗어난다.
-				if (ny <= 0 || ny > L || nx <= 0 || nx > L) break;
-				// 벽이 있다.
-				if (map[ny][nx] == 2) continue;
-				knight_map[ny][nx] = id;
-				knight_map[py][nx] = 0;
-			}
-		}
-		else if (d == 3) {
-			int nx = x + dir[d][1];
-			int px = x + knight[id].w - 1;
-			knight[id].c += dir[d][1];
-			for (int ny = y; ny < y + knight[id].h; ny++) {
-				// 맵을 벗어난다.
-				if (ny <= 0 || ny > L || nx <= 0 || nx > L) break;
-				// 벽이 있다.
-				if (map[ny][nx] == 2) continue;
-				knight_map[ny][nx] = id;
-				knight_map[ny][px] = 0;
 			}
 		}
 	}
 }
 
-bool pushKnight(int id, int d, int self) {
-	int y = knight[id].r;
-	int x = knight[id].c;
+bool moveKnight(int id, int dir) {
+	Knight now = knights[id];
+	int ny = now.r + dy[dir];
+	int nx = now.c + dx[dir];
+	if (ny <= 0 || (ny + now.h - 1) > L || nx <= 0 || (nx + now.w - 1) > L) return false;
 
-	//cout << "go " << " " << y << " " << x << "\n";
+	for (int y = ny; y < ny + now.h; y++) {
+		for (int x = nx; x < nx + now.w; x++) {
+			if (map[y][x] == 2) return false;
 
-	if (d == 0) {
-		int ny = y + dir[d][0];
-		for (int nx = x; nx < x + knight[id].w; nx++) {
-			// 맵을 벗어난다.
-			if (ny <= 0 || ny > L || nx <= 0 || nx > L) {
-				if (self) return false;
-				else return true;
-			}
-			// 벽이 있다.
-			if (map[ny][nx] == 2) return false;
-			// 기사가 있다.
-			if (knight_map[ny][nx] > 0) {
-				if (pushKnight(knight_map[ny][nx], d, 0)) {
-					can_move[knight_map[ny][nx]] = 1;
-					//move_list.push(knight_map[ny][nx]);
-				}
-				else return false;
+			if (knight_map[y][x] > 0 && knight_map[y][x] != id) {
+				if (!moveKnight(knight_map[y][x], dir)) return false;
 			}
 		}
 	}
-	else if (d == 1) {
-		int nx = x + knight[id].w - 1 + dir[d][1];
-		for (int ny = y; ny < y + knight[id].h; ny++) {
-			// 맵을 벗어난다.
-			if (ny <= 0 || ny > L || nx <= 0 || nx > L) {
-				if (self) return false;
-				else return true;
-			}
-			// 벽이 있다.
-			if (map[ny][nx] == 2) return false;
-			// 기사가 있다.
-			if (knight_map[ny][nx] > 0) {
-				if (pushKnight(knight_map[ny][nx], d, 0)) {
-					can_move[knight_map[ny][nx]] = 1;
-					//move_list.push(knight_map[ny][nx]);
-				}
-				else return false;
-			}
-		}
-	}
-	else if (d == 2) {
-		int ny = y + knight[id].h - 1 + dir[d][0];
-		for (int nx = x; nx < x + knight[id].w; nx++) {
-			// 맵을 벗어난다.
-			if (ny <= 0 || ny > L || nx <= 0 || nx > L) {
-				if(self) return false;
-				else return true;
-			}
-			// 벽이 있다.
-			if (map[ny][nx] == 2) return false;
-			// 기사가 있다.
-			if (knight_map[ny][nx] > 0) {
-				if (pushKnight(knight_map[ny][nx], d, 0)) {
-					can_move[knight_map[ny][nx]] = 1;
-					//move_list.push(knight_map[ny][nx]);
-				}
-				else return false;
-			}
-		}
-	}
-	else if (d == 3) {
-		int nx = x + dir[d][1];
-		for (int ny = y; ny < y + knight[id].h; ny++) {
-			// 맵을 벗어난다.
-			if (ny <= 0 || ny > L || nx <= 0 || nx > L) {
-				if (self) return false;
-				else return true;
-			}
-			// 벽이 있다.
-			if (map[ny][nx] == 2) return false;
-			// 기사가 있다.
-			if (knight_map[ny][nx] > 0) {
-				if (pushKnight(knight_map[ny][nx], d, 0)) {
-					can_move[knight_map[ny][nx]] = 1;
-					//move_list.push(knight_map[ny][nx]);
-				}
-				else return false;
-			}
-		}
-	}
+	knights[id].move = 1;
 	return true;
 }
 
 int main() {
 	ios::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
 	cin >> L >> N >> Q;
-	for (int i = 1; i <= L; i++) {
-		for (int j = 1; j <= L; j++) {
-			cin >> map[i][j];
+	for (int y = 1; y <= L; y++) {
+		for (int x = 1; x <= L; x++) {
+			cin >> map[y][x];
 		}
 	}
 	int r, c, h, w, k;
 	for (int i = 1; i <= N; i++) {
 		cin >> r >> c >> h >> w >> k;
-		knight[i] = { r, c, h, w, k };
+		knights[i] = { r, c, h, w, k, 0, 0 };
+
 		for (int y = r; y < r + h; y++) {
 			for (int x = c; x < c + w; x++) {
 				knight_map[y][x] = i;
 			}
 		}
 	}
-	int id, d;
-	for (int q = 1; q <= Q; q++) {
-		cin >> id >> d;
-		if (knight[id].k > 0 && pushKnight(id, d, 1)) {
-			//cout << q << " ok\n";
-			can_move[id] = 1;
-			//move_list.push(id);
-			getDamages(id, d);
-		}
-		//if (cnt_knight >= N) break;
-		//for (int i = 1; i <= L; i++) {
-		//	for (int j = 1; j <= L; j++) {
-		//		cout << knight_map[i][j] << " ";
-		//	}
-		//	cout << "\n";
-		//}
+	int id, dir;
+	for (int i = 1; i <= Q; i++) {
+		cin >> id >> dir;
+		if (knights[id].k <= 0) continue;
+		if (!moveKnight(id, dir)) continue;
+		else updateKnight(id, dir);
 	}
 
 	int ans = 0;
 	for (int i = 1; i <= N; i++) {
-		if (knight[i].k <= 0) continue;
-		ans += score[i];
-		//cout << knight[i].dmg << " ";
+		if (knights[i].k <= 0) continue;
+		ans += knights[i].dmg;
 	}
 	cout << ans << "\n";
 	return 0;
