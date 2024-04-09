@@ -211,14 +211,118 @@ int main() {
 			}
 		}
 	}
-	int id, d;
+	int cmd_id, d;
 	for (int q = 1; q <= Q; q++) {
-		cin >> id >> d;
-		if (pushKnight(id, d)) {
+		cin >> cmd_id >> d;
+		if (pushKnight(cmd_id, d)) {
 			//cout << q << " ok\n";
-			knight[id].move = 1;
+			knight[cmd_id].move = 1;
 			//move_list.push(id);
-			getDamages(id, d);
+			//getDamages(id, d);
+
+			for (int id = 1; id <= N; id++) {
+				if (!knight[id].move) continue;
+				knight[id].move = 0;
+
+				//int id = move_list.front();
+				//move_list.pop();
+
+				int y = knight[id].r;
+				int x = knight[id].c;
+
+				//cout << id << " " << y << " " << x << "\n";
+
+				int nr = y + dir[d][0];
+				int nc = x + dir[d][1];
+
+				bool dead = 0;
+				if (cmd_id != id) {
+					for (int i = nr; i < nr + knight[id].h; i++) {
+						for (int j = nc; j < nc + knight[id].w; j++) {
+							// 맵을 벗어난다.
+							if (i <= 0 || i > L || j <= 0 || j > L) {
+								dead = 1;
+								break;
+							}
+							if (map[i][j] == 1) {
+								knight[id].k--;
+								knight[id].dmg++;
+							}
+							if (knight[id].k <= 0) {
+								dead = 1;
+								break;
+							}
+						}
+						if (dead) break;
+					}
+				}
+				//cout << knight[id].k << "\n";
+
+				if (dead) {
+					knight[id].r = 0;
+					knight[id].c = 0;
+					for (int i = y; i < y + knight[id].h; i++) {
+						for (int j = x; j < x + knight[id].w; j++) {
+							// 맵을 벗어난다.
+							if (i <= 0 || i > L || j <= 0 || j > L) break;
+							knight_map[i][j] = 0;
+						}
+					}
+				}
+				else if (d == 0) {
+					int ny = y + dir[d][0];
+					int py = y + knight[id].h - 1;
+					knight[id].r += dir[d][0];
+					for (int nx = x; nx < x + knight[id].w; nx++) {
+						// 맵을 벗어난다.
+						if (ny <= 0 || ny > L || nx <= 0 || nx > L) break;
+						// 벽이 있다.
+						if (map[ny][nx] == 2) continue;
+						knight_map[ny][nx] = id;
+						knight_map[py][nx] = 0;
+					}
+				}
+				else if (d == 1) {
+					int nx = x + knight[id].w - 1 + dir[d][1];
+					int px = x;
+					knight[id].c += dir[d][1];
+					for (int ny = y; ny < y + knight[id].h; ny++) {
+						// 맵을 벗어난다.
+						if (ny <= 0 || ny > L || nx <= 0 || nx > L) break;
+						// 벽이 있다.
+						if (map[ny][nx] == 2) continue;
+						knight_map[ny][nx] = id;
+						knight_map[ny][px] = 0;
+					}
+				}
+				else if (d == 2) {
+					int ny = y + knight[id].h - 1 + dir[d][0];
+					int py = y;
+					knight[id].r += dir[d][0];
+					for (int nx = x; nx < x + knight[id].w; nx++) {
+						// 맵을 벗어난다.
+						if (ny <= 0 || ny > L || nx <= 0 || nx > L) break;
+						// 벽이 있다.
+						if (map[ny][nx] == 2) continue;
+						knight_map[ny][nx] = id;
+						knight_map[py][nx] = 0;
+					}
+				}
+				else if (d == 3) {
+					int nx = x + dir[d][1];
+					int px = x + knight[id].w - 1;
+					knight[id].c += dir[d][1];
+					for (int ny = y; ny < y + knight[id].h; ny++) {
+						// 맵을 벗어난다.
+						if (ny <= 0 || ny > L || nx <= 0 || nx > L) break;
+						// 벽이 있다.
+						if (map[ny][nx] == 2) continue;
+						knight_map[ny][nx] = id;
+						knight_map[ny][px] = 0;
+					}
+				}
+			}
+
 		}
 		//for (int i = 1; i <= L; i++) {
 		//	for (int j = 1; j <= L; j++) {
