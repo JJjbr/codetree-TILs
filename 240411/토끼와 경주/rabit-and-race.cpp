@@ -57,29 +57,53 @@ void raceRabbit() {
 	pq_rabbit.pop();
 
 	priority_queue<Move> pq;
-	for (int i = 0; i < 4; i++) {
-		int ny = now.row + dy[i] * rabbit[now.i].d;
-		int nx = now.col + dx[i] * rabbit[now.i].d;
-		while (ny <= 0 || ny > N || nx <= 0 || nx > M) {
-			if (ny <= 0) {
-				ny = 1 - ny;
-				ny = 1 + ny;
-			}
-			if (ny > N) {
-				ny = N - ny;
-				ny = N + ny;
-			}
-			if (nx <= 0) {
-				nx = 1 - nx;
-				nx = 1 + nx;
-			}
-			if (nx > M) {
-				nx = M - nx;
-				nx = M + nx;
-			}
-		}
-		pq.push({ ny + nx, ny, nx, 0 });
+	int y = now.row, x = now.col;
+	int d = rabbit[now.i].d;
+
+	// 하
+	int ny = d % (2 * (N - 1));
+	ny = y + ny;
+	if (ny > N) {
+		ny = N - (ny - N);
 	}
+	if (ny <= 0) {
+		ny = 2 - ny;
+	}
+	pq.push({ ny + x, ny, x, 0 });
+
+	// 상
+	ny = d % (2 * (N - 1));
+	ny = y - ny;
+	if (ny <= 0) {
+		ny = 2 - ny;
+	}
+	if (ny > N) {
+		ny = N - (ny - N);
+	}
+	pq.push({ ny + x, ny, x, 0 });
+
+	// 우
+	int nx = d % (2 * (M - 1));
+	nx = x + nx;
+	if (nx > M) {
+		nx = M - (nx - M);
+	}
+	if (nx <= 0) {
+		nx = 2 - nx;
+	}
+	pq.push({ y + nx, y, nx, 0 });
+
+	// 좌
+	nx = d % (2 * (M - 1));
+	nx = x - nx;
+	if (nx <= 0) {
+		nx = 2 - nx;
+	}
+	if (nx > M) {
+		nx = M - (nx - M);
+	}
+	pq.push({ y + nx, y, nx, 0 });
+
 	Move move = pq.top();
 	pq_rabbit.push({ now.jump + 1, move.sum, move.row, move.col, now.pid, now.i });
 	rabbit[now.i].y = move.row;
@@ -105,7 +129,7 @@ int main() {
 		rabbit[i] = { 1, 1, pid, d };
 		pq_rabbit.push({ 0, 2, 1, 1, pid, i });
 	}
-	
+
 	for (int q = 1; q < Q; q++) {
 		cin >> cmd;
 		if (cmd == 200) {
