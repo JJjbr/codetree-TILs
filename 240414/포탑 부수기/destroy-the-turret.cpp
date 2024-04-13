@@ -56,18 +56,15 @@ void attackCannon() {
 	Info weak = tower[0];
 	Info strong = tower[tower_size - 1];
 
-	//map[weak.y][weak.x] += (N + M);
-	//map[strong.y][strong.x] -= map[weak.y][weak.x];
-	//path[weak.y][weak.x] = true;
-	//path[strong.y][strong.x] = true;
-	//if (map[strong.y][strong.x] <= 0) total--;
+	map[strong.y][strong.x] -= map[weak.y][weak.x];
+	if (map[strong.y][strong.x] <= 0) total--;
 
 	for (int i = 0; i < 8; i++) {
-		int ny = strong.y + dy[i];
+		int ny = strong.y + around[i][0];
 		if (ny < 0) ny = N - 1;
 		else if (ny >= N) ny = 0;
 
-		int nx = strong.x + dx[i];
+		int nx = strong.x + around[i][1];
 		if (nx < 0) nx = M - 1;
 		else if (nx >= M) nx = 0;
 
@@ -75,6 +72,7 @@ void attackCannon() {
 		map[ny][nx] -= (map[weak.y][weak.x] / 2);
 		path[ny][nx] = true;
 		if (map[ny][nx] <= 0) total--;
+		//cout << ny << " " << nx << " " << map[ny][nx] << " " << total << "\n";
 	}
 }
 
@@ -91,10 +89,8 @@ bool attackLaser() {
 	queue<Move> q;
 	q.push({ weak.y, weak.x, 0 });
 	map[weak.y][weak.x] += (N + M);
-	map[strong.y][strong.x] -= map[weak.y][weak.x];
 	path[weak.y][weak.x] = true;
 	path[strong.y][strong.x] = true;
-	if (map[strong.y][strong.x] <= 0) total--;
 
 	while (!q.empty()) {
 		Move now = q.front();
@@ -102,6 +98,9 @@ bool attackLaser() {
 		//cout << now.y << " " << now.x << "\n";
 
 		if (now.y == strong.y && now.x == strong.x) {
+			map[strong.y][strong.x] -= map[weak.y][weak.x];
+			if (map[strong.y][strong.x] <= 0) total--;
+
 			int py = visited[strong.y][strong.x].first;
 			int px = visited[strong.y][strong.x].second;
 			while (py != weak.y || px != weak.x) {
@@ -126,6 +125,7 @@ bool attackLaser() {
 			if (nx < 0) nx = M - 1;
 			else if (nx >= M) nx = 0;
 
+			//cout << ny << " " << nx << " " << map[ny][nx] << "\n";
 			if (map[ny][nx] <= 0) continue;
 			if (visited[ny][nx] != init) continue;
 			q.push({ ny, nx, now.dist + 1 });
@@ -138,8 +138,14 @@ bool attackLaser() {
 int main() {
 
 	input();
+
+	int answer = 0;
 	for (int k = 1; k <= K; k++) {
 		memset(path, 0, sizeof(path));
+
+		//for (int i = 0; i < tower.size(); i++) {
+		//	cout << tower[i].power << " " << tower[i].latest << " " << tower[i].sum << " " << tower[i].x << "\n";
+		//}
 
 		Info weak = tower[0];
 		//cout << weak.latest << "\n";
@@ -148,7 +154,11 @@ int main() {
 		if (!attackLaser()) {
 			attackCannon();
 		}
-		if (total <= 1) break;
+		//cout << k << " " << total << "\n";
+		if (total <= 1) {
+			answer = map[weak.y][weak.x];
+			break;
+		}
 
 		total = 0;
 		for (int i = 0; i < N; i++) {
@@ -169,10 +179,6 @@ int main() {
 		}
 		sort(tower.begin(), tower.end(), cmp);
 
-		//for (int i = 0; i < tower.size(); i++) {
-		//	cout << tower[i].power << " " << tower[i].latest << "\n";
-		//}
-
 		//cout << "\n";
 		//for (int i = 0; i < N; i++) {
 		//	for (int j = 0; j < M; j++) {
@@ -180,8 +186,10 @@ int main() {
 		//	}
 		//	cout << "\n";
 		//}
+
+		answer = tower.back().power;
 	}
-	cout << tower.back().power << "\n";
+	cout << answer << "\n";
 
 	return 0;
 }
