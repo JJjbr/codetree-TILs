@@ -58,6 +58,7 @@ priority_queue<Strong> strong;
 bool visited[12][12];
 Coord path[100];
 Coord min_path[100];
+bool visited_path[12][12];
 int max_n;
 bool attack;
 int attack_time[12][12];
@@ -96,6 +97,7 @@ void attackShell(int sy, int sx, int ey, int ex) {
 }
 
 void laserPath(int n, int sy, int sx, int ey, int ex, int y, int x) {
+	//cout << y << " " << x << "\n";
 	if (n >= max_n) return;
 	if (y == ey && x == ex) {
 		max_n = n;
@@ -113,9 +115,11 @@ void laserPath(int n, int sy, int sx, int ey, int ex, int y, int x) {
 		if (nx <= 0) nx = M;
 		else if (nx > M) nx = 1;
 
-		if (map[ny][nx] <= 0) continue;
+		if (map[ny][nx] <= 0 || visited_path[ny][nx]) continue;
 		path[n] = { ny, nx };
+		visited_path[ny][nx] = true;
 		laserPath(n + 1, sy, sx, ey, ex, ny, nx);
+		visited_path[ny][nx] = false;
 		//path.pop_back();
 	}
 }
@@ -125,10 +129,12 @@ void attackLaser(int sy, int sx, int ey, int ex) {
 	//path.clear();
 	memset(path, 0, sizeof(path));
 	memset(min_path, 0, sizeof(min_path));
+	memset(visited_path, 0, sizeof(visited_path));
 	map[sy][sx] += (N + M);
 	attack_time[sy][sx] += 1;
 	max_n = 1e6;
 	attack = false;
+	visited_path[sy][sx] = true;
 	laserPath(0, sy, sx, ey, ex, sy, sx);
 
 	if (attack) {
